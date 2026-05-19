@@ -1,0 +1,11 @@
+---
+- name: Install packages on dev, test, and prod
+  hosts: all
+  become: true
+  tasks:
+    - name: Install php and mariadb
+      yum:
+        name:
+          - php
+          - mariadb-server
+        state: present
