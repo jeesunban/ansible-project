@@ -18,7 +18,7 @@
       ansible.builtin.shell: |
         /GCLOUD/APACHE/bin/apache_stop.sh
       args:
-        chdir: /GCLOUD/APACHE/apache/bin
+        chdir: /GCLOUD/APACHE/bin
       register: apache_stop_result
       ignore_errors: true
 
