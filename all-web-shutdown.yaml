@@ -1,0 +1,31 @@
+---
+- name: Apache shutdown
+  hosts:
+    - node1
+    - node2
+    - node3
+
+  serial: 1
+  gather_facts: false
+  any_errors_fatal: true
+
+  become: true
+  become_user: apache
+
+  tasks:
+
+    - name: Apache stop
+      ansible.builtin.shell: |
+        /GCLOUD/APACHE/bin/apache_stop.sh
+      args:
+        chdir: /GCLOUD/APACHE/apache/bin
+      register: apache_stop_result
+      ignore_errors: true
+
+    - name: Apache stop result
+      ansible.builtin.debug:
+        msg:
+          - "HOST={{ inventory_hostname }}"
+          - "RC={{ apache_stop_result.rc }}"
+          - "STDOUT={{ apache_stop_result.stdout | default('') }}"
+          - "STDERR={{ apache_stop_result.stderr | default('') }}"

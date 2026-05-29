@@ -1,0 +1,31 @@
+---
+- name: Apache start
+  hosts:
+    - node1
+    - node2
+    - node3
+
+  serial: 1
+  gather_facts: false
+  any_errors_fatal: true
+
+  become: true
+  become_user: apache
+
+  tasks:
+
+    - name: Apache start
+      ansible.builtin.shell: |
+        /GCLOUD/APACHE/bin/apache_start.sh
+      args:
+        chdir: /GCLOUD/APACHE/apache/bin
+      register: apache_start_result
+      ignore_errors: true
+
+    - name: Apache start result
+      ansible.builtin.debug:
+        msg:
+          - "HOST={{ inventory_hostname }}"
+          - "RC={{ apache_start_result.rc }}"
+          - "STDOUT={{ apache_start_result.stdout | default('') }}"
+          - "STDERR={{ apache_start_result.stderr | default('') }}"
