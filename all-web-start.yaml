@@ -1,9 +1,9 @@
 ---
 - name: Apache start
   hosts:
-    - node1
-    - node2
-    - node3
+    - dev
+    - test
+    - prod
 
   serial: 1
   gather_facts: false
