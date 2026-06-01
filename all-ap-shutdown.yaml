@@ -17,21 +17,20 @@
 
   tasks:
 
-    - name: 현재 host 순번 계산
+    - name: 그룹별 JBoss 시작 번호 계산
       ansible.builtin.set_fact:
-        host_index: >-
-          {{
-            (
-              groups[group_names[0]].index(inventory_hostname) + 1
-            ) * 10
-          }}
+        host_index: "{{ (group_names[0] | regex_replace('group0', '') | int) * 10 }}"
 
     - name: 대상 JBoss 목록 생성
       ansible.builtin.set_fact:
         target_jboss:
           - "AP_sbms{{ host_index }}"
-          - "AP_sbms{{ (host_index | int) + 1 }}"
-          - "AP_sbms{{ (host_index | int) + 2 }}"
+          - "AP_sbms{{ host_index + 1 }}"
+          - "AP_sbms{{ host_index + 2 }}"
+
+    - name: 대상 JBoss 확인
+      ansible.builtin.debug:
+        var: target_jboss
 
     - name: JBoss shutdown
       ansible.builtin.shell: |
