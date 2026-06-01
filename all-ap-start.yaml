@@ -30,8 +30,8 @@
       ansible.builtin.set_fact:
         target_jboss:
           - "AP_sbms{{ host_index }}"
-          - "AP_sbms{{ host_index + 1 }}"
-          - "AP_sbms{{ host_index + 2 }}"
+          - "AP_sbms{{ host_index + int 1 }}"
+          - "AP_sbms{{ host_index + int 2 }}"
 
     - name: JBoss start
       ansible.builtin.shell: |
