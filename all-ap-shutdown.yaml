@@ -3,7 +3,6 @@
   hosts:
     - group01
     - group02
-    - group03
 
   serial: 1
   gather_facts: false
