@@ -1,0 +1,51 @@
+---
+- name: JBoss shutdown
+  hosts:
+    - group01
+    - group02
+    - group03
+
+  serial: 1
+  gather_facts: false
+  any_errors_fatal: true
+
+  become: true
+  become_user: jboss
+
+  vars:
+    jboss_base_dir: "/APP/JBOSS/domain"
+
+  tasks:
+
+    - name: 현재 host 순번 계산
+      ansible.builtin.set_fact:
+        host_index: >-
+          {{
+            (
+              groups[group_names[0]].index(inventory_hostname) + 1
+            ) * 10
+          }}
+
+    - name: 대상 JBoss 목록 생성
+      ansible.builtin.set_fact:
+        target_jboss:
+          - "AP_sbms{{ host_index }}"
+          - "AP_sbms{{ host_index + 1 }}"
+          - "AP_sbms{{ host_index + 2 }}"
+
+    - name: JBoss shutdown
+      ansible.builtin.shell: |
+        {{ jboss_base_dir }}/{{ item }}/bin/shutdown.sh
+      args:
+        chdir: "{{ jboss_base_dir }}/{{ item }}/bin"
+      loop: "{{ target_jboss }}"
+      register: shutdown_result
+      ignore_errors: true
+
+    - name: shutdown result
+      ansible.builtin.debug:
+        msg:
+          - "HOST={{ inventory_hostname }}"
+          - "JBOSS={{ item.item }}"
+          - "RC={{ item.rc }}"
+      loop: "{{ shutdown_result.results }}"
