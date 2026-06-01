@@ -16,24 +16,30 @@
 
   tasks:
 
-    - name: 그룹별 JBoss 시작 번호 계산
+    - name: 그룹 내 호스트 순번 계산
       ansible.builtin.set_fact:
-        host_index: "{{ (group_names[0] | regex_replace('group0', '') | int) * 10 }}"
+        host_seq: "{{ groups[group_names[0]].index(inventory_hostname) + 1 }}"
+
+    - name: JBoss 시작 번호 계산
+      ansible.builtin.set_fact:
+        host_index: "{{ host_seq | int * 10 }}"
 
     - name: 대상 JBoss 목록 생성
       ansible.builtin.set_fact:
         target_jboss:
-          - "AP_sbms{{ host_index | int }}"
-          - "AP_sbms{{ (host_index | int) + 1 }}"
-          - "AP_sbms{{ (host_index | int) + 2 }}"
+          - "AP_sbms{{ host_index }}"
+          - "AP_sbms{{ host_index | int + 1 }}"
+          - "AP_sbms{{ host_index | int + 2 }}"
 
-    - name: 대상 JBoss 확인
+    - name: 매핑 확인
       ansible.builtin.debug:
-        var: target_jboss
+        msg:
+          - "HOST={{ inventory_hostname }}"
+          - "HOST_SEQ={{ host_seq }}"
+          - "TARGET={{ target_jboss }}"
 
     - name: JBoss start
-      ansible.builtin.shell: |
-        {{ jboss_base_dir }}/{{ item }}/bin/start.sh
+      ansible.builtin.shell: "./start.sh"
       args:
         chdir: "{{ jboss_base_dir }}/{{ item }}/bin"
       loop: "{{ target_jboss }}"
