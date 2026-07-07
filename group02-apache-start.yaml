@@ -1,0 +1,21 @@
+---
+- name: APACHE START for 서울시
+  hosts: group02
+  serial: 1
+  gather_facts: false
+  tasks:
+  - name: BLOCK - APACHE 시작
+    block:
+    - name: get APACHE directory list
+      ansible.builtin.find:
+        paths: "{{ apps_dir }}"
+        recurse: false
+        file_type: directory
+      register: apache_dirs
+    - ansible.bultin.debug:
+        var: apache_dirs.files | map(attribute='path')
+    - name: include normal playbook
+      include_tasks: x12-apache-start.yaml
+      loop: "{{ ap_dirs.files | map(attribute='path') }}"
+    when: "'group02' in target_groups"
+    any_errors_fatal: true

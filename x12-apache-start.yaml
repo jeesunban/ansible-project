@@ -1,0 +1,14 @@
+- name: Apache start
+  ansible.builtin.shell:
+    cmd: ./apache_start.sh
+    chdir: "{{ item }}/bin"
+  register: apache_start_result
+  ignore_errors: true
+
+- name: Apache start result
+  ansible.builtin.debug:
+    msg:
+      - "HOST={{ inventory_hostname }}"
+      - "RC={{ apache_start_result.rc }}"
+      - "STDOUT={{ apache_start_result.stdout | default('') }}"
+      - "STDERR={{ apache_start_result.stderr | default('') }}"

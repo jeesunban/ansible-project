@@ -1,0 +1,14 @@
+- name: Apache stop
+  ansible.builtin.shell:
+    cmd: ./apache_stop.sh
+    chdir: "{{ item }}/bin"
+  register: apache_stop_result
+  ignore_errors: true
+
+- name: Apache stop result
+  ansible.builtin.debug:
+    msg:
+      - "HOST={{ inventory_hostname }}"
+      - "RC={{ apache_stop_result.rc }}"
+      - "STDOUT={{ apache_stop_result.stdout | default('') }}"
+      - "STDERR={{ apache_stop_result.stderr | default('') }}"
