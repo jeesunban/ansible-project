@@ -12,7 +12,7 @@
         recurse: false
         file_type: directory
       register: apache_dirs
-    - ansible.bultin.debug:
+    - ansible.builtin.debug:
         var: apache_dirs.files | map(attribute='path')
     - name: include normal playbook
       include_tasks: x12-apache-start.yaml
