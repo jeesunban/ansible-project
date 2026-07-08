@@ -1,21 +1,24 @@
----
 - name: APACHE START for 서울시
   hosts: group03
   serial: 1
   gather_facts: false
+  # become: true
+
   tasks:
-  - name: BLOCK - APACHE 시작
-    block:
-    - name: get APACHE directory list
-      ansible.builtin.find:
-        paths: "{{ apps_dir }}"
-        recurse: false
-        file_type: directory
-      register: apache_dirs
-    - ansible.builtin.debug:
-        var: apache_dirs.files | map(attribute='path')
-    - name: include normal playbook
-      include_tasks: x12-apache-start.yaml
-      loop: "{{ apache_dirs.files | map(attribute='path') }}"
-    when: "'group03' in target_groups"
-    any_errors_fatal: true
+    - name: BLOCK - APACHE 시작 실행
+      block:
+        - name: Apache 시작 스크립트 직접 실행
+          ansible.builtin.shell:
+            cmd: "{{ apps_dir }}/bin/apache_start.sh"
+          register: apache_start_result
+
+        - name: Apache start 결과 출력
+          ansible.builtin.debug:
+            msg:
+              - "호스트 명 = {{ inventory_hostname }}"
+              - "결과 코드(RC) = {{ apache_start_result.rc }}"
+              - "스크립트 출력 = "
+              - "{{ apache_start_result.stdout_lines }}"
+
+      when: target_groups is search('group03')
+      any_errors_fatal: true

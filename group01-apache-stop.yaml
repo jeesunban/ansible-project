@@ -1,21 +1,24 @@
----
 - name: APACHE STOP for 서울시
   hosts: group01
   serial: 1
   gather_facts: false
+  # become: true 
+
   tasks:
-  - name: BLOCK - APACHE 중지
-    block:
-    - name: get APACHE directory list
-      ansible.builtin.find:
-        paths: "{{ apps_dir }}"
-        recurse: false
-        file_type: directory
-      register: apache_dirs
-    - ansible.builtin.debug:
-        var: apache_dirs.files | map(attribute='path')
-    - name: include normal playbook
-      include_tasks: x11-apache-stop.yaml
-      loop: "{{ apache_dirs.files | map(attribute='path') }}"
-    when: "'group01' in target_groups"
-    any_errors_fatal: true
+    - name: BLOCK - APACHE 중지 실행
+      block:
+        - name: Apache 중지 스크립트 직접 실행
+          ansible.builtin.shell:
+            cmd: "{{ apps_dir }}/bin/apache_stop.sh"
+          register: apache_stop_result
+
+        - name: Apache stop 결과 출력
+          ansible.builtin.debug:
+            msg:
+              - "호스트 명 = {{ inventory_hostname }}"
+              - "결과 코드(RC) = {{ apache_stop_result.rc }}"
+              - "스크립트 출력 = "
+              - "{{ apache_stop_result.stdout_lines }}"
+              
+      when: target_groups is search('group01')
+      any_errors_fatal: true
