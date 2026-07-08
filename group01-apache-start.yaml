@@ -16,6 +16,6 @@
         var: apache_dirs.files | map(attribute='path')
     - name: include normal playbook
       include_tasks: x12-apache-start.yaml
-      loop: "{{ ap_dirs.files | map(attribute='path') }}"
+      loop: "{{ apache_dirs.files | map(attribute='path') }}"
     when: "'group01' in target_groups"
     any_errors_fatal: true
