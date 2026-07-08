@@ -2,7 +2,7 @@
   hosts: group03
   serial: 1
   gather_facts: false
-  # become: true
+  become: true
 
   tasks:
     - name: BLOCK - APACHE 시작 실행

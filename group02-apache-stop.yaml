@@ -2,7 +2,7 @@
   hosts: group02
   serial: 1
   gather_facts: false
-  # become: true 
+  become: true 
 
   tasks:
     - name: BLOCK - APACHE 중지 실행
